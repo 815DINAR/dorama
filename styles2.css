@@ -1,0 +1,404 @@
+/* Сброс стилей и универсальный box-sizing */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* html и body без скролла */
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* Улучшенная поддержка тач-событий */
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Стили для нижней плашки */
+.bottom-panel {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  box-shadow: 0 -4px 10px rgba(255, 255, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5px 0;
+  z-index: 20; /* выше основного видео и оверлеев */
+}
+
+.panel-icon {
+  width: 25px;
+  height: 25px;
+  margin-bottom: 6px;
+}
+
+.panel-text {
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+/* Контейнер приложения занимает весь экран */
+.app {
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+/* Контейнер видео с фиксированным соотношением 9:16 */
+.video-container {
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 9 / 16;
+  background: black;
+  position: relative;
+  overflow: hidden;
+  /* Улучшенная поддержка тач-событий для Telegram */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Основное видео */
+.video-container video#currentVideo {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center 20%; /* смещаем видео вниз немного */
+  z-index: 1;
+  opacity: 1;
+  transition: opacity 0.5s ease-in-out;
+}
+
+/* Фиксированные оверлеи (подняты выше нижней плашки) */
+.video-info {
+  position: absolute;
+  bottom: 90px !important;
+  left: 20px;
+  right: 90px; /* Отступ справа для кнопок */
+  z-index: 10;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.7);
+  font-size: 16px;
+  /* Не блокируем касания - они должны проходить к видео */
+  pointer-events: none;
+}
+
+.video-info h3 {
+  margin-bottom: 8px;
+  line-height: 1.3;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.video-info p {
+  margin-bottom: 4px;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.action-buttons {
+  position: absolute;
+  bottom: 90px !important;
+  right: 0 !important; /* прижимаем колонку к правому краю */
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.watch-link,
+.action-button {
+  background: transparent;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 11px;
+  /* Важно для Telegram - увеличиваем область касания */
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px;
+  /* Улучшенная поддержка тач-событий */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  /* Убираем outline для Telegram */
+  outline: none;
+  -webkit-appearance: none;
+}
+
+/* Увеличиваем область касания кнопок для Telegram */
+.action-button::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  z-index: -1;
+}
+
+.button-icon {
+  width: 20px;
+  height: 20px;
+  margin-bottom: 5px;
+  /* Предотвращаем выделение иконок */
+  -webkit-user-select: none;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Модальное окно с описанием */
+.description-modal {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50vh;
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(10px);
+  transform: translateY(100%);
+  transition: transform 0.3s ease-in-out;
+  z-index: 100;
+  border-radius: 20px 20px 0 0;
+  overflow: hidden;
+  /* Разрешаем выделение текста в модальном окне */
+  -webkit-user-select: text;
+  user-select: text;
+  touch-action: pan-y;
+}
+
+.description-modal.show {
+  transform: translateY(0);
+}
+
+.modal-content {
+  padding: 20px;
+  height: 100%;
+  overflow-y: auto;
+  position: relative;
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.modal-close {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 28px;
+  cursor: pointer;
+  line-height: 1;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+  /* Улучшенная поддержка для Telegram */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+  /* Увеличиваем область касания */
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.modal-close:hover,
+.modal-close:active {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.modal-title {
+  color: #fff;
+  font-size: 18px;
+  margin-bottom: 15px;
+  margin-right: 50px;
+  line-height: 1.3;
+  font-weight: bold;
+}
+
+.modal-description {
+  color: #ccc;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-right: 10px;
+  white-space: pre-line; /* Сохраняем переносы строк */
+}
+
+/* Вкладки */
+.tabs {
+  display: flex;
+  justify-content: space-around;
+  background: #333;
+  color: #fff;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  z-index: 2;
+}
+
+.tabs button {
+  flex: 1;
+  padding: 10px;
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.tabs button.active {
+  background: #444;
+}
+
+/* Адаптивные правки для мобильных */
+@media (max-width: 600px) {
+  .video-info {
+    bottom: 110px;
+    left: 10px;
+    right: 80px;
+    font-size: 14px;
+  }
+  
+  .action-buttons {
+    bottom: 110px;
+    right: 0 !important;
+    gap: 8px;
+  }
+  
+  .button-icon {
+    width: 30px;
+    height: 30px;
+  }
+  
+  /* Увеличиваем кнопки для мобильных устройств и Telegram */
+  .action-button {
+    min-width: 50px;
+    min-height: 50px;
+    padding: 10px;
+  }
+  
+  .tabs button {
+    font-size: 14px;
+    padding: 8px;
+  }
+  
+  .modal-content {
+    padding: 15px;
+  }
+  
+  .modal-title {
+    font-size: 16px;
+    margin-right: 40px;
+  }
+  
+  .modal-description {
+    font-size: 13px;
+  }
+  
+  .modal-close {
+    min-width: 48px;
+    min-height: 48px;
+    font-size: 32px;
+  }
+}
+
+/* Адаптивность для ДЕСКТОПОВ (широкие экраны) */
+@media (min-width: 768px) {
+  .app {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .video-container {
+    width: 500px;         /* увеличенная ширина для десктопа */
+    height: 890px;        /* высота по соотношению 9:16 */
+    background: black;
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;  /* округленные края */
+    box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.1);
+  }
+  
+  .video-container video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  /* Фиксируем оверлеи внутри контейнера */
+  .video-info, .action-buttons {
+    width: 100%;
+    max-width: 320px;
+    position: absolute;
+  }
+  
+  .video-info {
+    bottom: 80px;
+    left: 10px;
+    right: 100px;
+  }
+  
+  .action-buttons {
+    bottom: 80px;
+    right: -110px !important; /* прижимаем к правому краю */
+    flex-direction: column;
+  }
+  
+  .description-modal {
+    left: 50%;
+    right: auto;
+    width: 500px;
+    transform: translateX(-50%) translateY(100%);
+    border-radius: 20px 20px 0 0;
+  }
+  
+  .description-modal.show {
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Специальные стили для Telegram WebApp */
+@media (hover: none) and (pointer: coarse) {
+  /* Это мобильное устройство */
+  .action-button {
+    min-width: 48px;
+    min-height: 48px;
+  }
+  
+  .modal-close {
+    min-width: 48px;
+    min-height: 48px;
+  }
+}

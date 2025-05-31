@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>DoramaShorts</title>
+  <link rel="stylesheet" href="styles2.css">
+  <link rel="icon" type="image/x-icon" href="Group-589.ico">
+  
+  <!-- Предотвращаем зум и другие iOS поведения -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-touch-fullscreen" content="yes">
+  <meta name="format-detection" content="telephone=no">
+</head>
+<body>
+  <div class="app">
+    <div class="video-container">
+    
+      <!-- Основное видео с защитой от iOS плеера -->
+      <video 
+        id="currentVideo" 
+        autoplay 
+        muted 
+        loop 
+        playsinline 
+        webkit-playsinline
+        disablepictureinpicture
+        controlslist="nodownload nofullscreen noremoteplayback"
+        x-webkit-airplay="deny"
+      ></video>
+      
+      <!-- Оверлей с информацией о видео (только название и жанр) -->
+      <div class="video-info">
+        <h3 id="videoTitle"></h3>
+        <p id="videoSeries" style="display: none;"></p>
+        <p id="videoSeasons" style="display: none;"></p>
+        <p id="videoStatus" style="display: none;"></p>
+        <p id="videoCountry" style="display: none;"></p>
+        <p id="videoGenre"></p>
+      </div>
+      
+      <!-- Оверлей с кнопками действий -->
+      <div class="action-buttons">
+        <a id="watchLink" class="watch-link" target="_blank">
+          <img id="watchIcon" src="svg/w.svg" alt="icon" class="button-icon">
+          Смотреть
+        </a>
+        <button id="descriptionButton" class="action-button">
+          <img src="svg/d.svg" alt="icon" class="button-icon">
+          Описание
+        </button>
+        <button class="action-button">
+          <img src="svg/a.svg" alt="icon" class="button-icon">
+          Избранное
+        </button>
+      </div>
+      
+      <!-- Модальное окно с описанием -->
+      <div id="descriptionModal" class="description-modal">
+        <div class="modal-content">
+          <button class="modal-close" id="modalClose">&times;</button>
+          <h3 class="modal-title" id="modalTitle"></h3>
+          <div class="modal-description" id="modalDescription"></div>
+        </div>
+      </div>
+      
+      <!-- Новая плашка внизу экрана -->
+      <div class="bottom-panel">
+        <img src="svg/Group%20581.svg" alt="Icon" class="panel-icon">
+        <div class="panel-text">Главная</div>
+      </div>
+    </div>
+  </div>
+  <script src="script6.js"></script>
+</body>
+</html>
